@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Use Case Screening — Blue Flame Research</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:        #1e3a5f;
+    --navy-mid:    #2d5a8e;
+    --navy-light:  #e8f0f9;
+    --steel:       #2563a8;
+    --steel-light: #f0f6ff;
+    --teal:        #0f766e;
+    --teal-light:  #e6f7f5;
+    --ink:         #1a1814;
+    --ink-mid:     #4a4540;
+    --ink-light:   #8a8480;
+    --ink-faint:   #c8c4be;
+    --paper:       #f8f9fc;
+    --paper-warm:  #f2f0eb;
+    --rule:        #dde3ec;
+    --white:       #ffffff;
+    --shadow-sm:   0 1px 3px rgba(30,58,95,0.08),0 2px 8px rgba(30,58,95,0.04);
+    --shadow-md:   0 4px 16px rgba(30,58,95,0.12),0 8px 32px rgba(30,58,95,0.06);
+    --r:           10px;
+    --green:  #16a34a; --green-bg:  #dcfce7;
+    --amber:  #d97706; --amber-bg:  #fef3c7;
+    --red:    #dc2626; --red-bg:    #fee2e2;
+    --violet: #7c3aed; --violet-bg: #ede9fe;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.65; }
+
+  /* ── HEADER ── */
+  .tool-header { background: var(--navy); padding: 18px 40px; position: sticky; top: 0; z-index: 100; }
+  .tool-header::after { content: ''; display: block; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--steel) 0%, #38bdf8 50%, var(--teal) 100%); }
+  .th-inner { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .th-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
+  .th-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 21px; color: #fff; }
+  .th-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+  /* ── BUTTONS ── */
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 500; padding: 7px 15px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.22); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+  .btn-primary { background: var(--steel); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-gold { background: var(--teal); color: #fff; }
+  .btn-gold:hover { background: #0c5d56; }
+  .btn-light { background: var(--white); color: var(--ink); border: 1px solid var(--rule); }
+  .btn-light:hover { background: var(--paper); }
+  .btn-sm { font-size: 11.5px; padding: 5px 12px; }
+
+  /* ── INTRO BANNER ── */
+  .intro-banner { max-width: 980px; margin: 0 auto; padding: 28px 40px 0; }
+  .intro-card { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 20px 24px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--steel); }
+  .intro-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 20px; color: var(--navy); margin-bottom: 6px; }
+  .intro-desc { font-size: 13.5px; color: var(--ink-mid); line-height: 1.65; }
+  .save-load-tip { font-size: 12.5px; color: var(--steel); background: var(--steel-light); border: 1px solid #c5d8f0; border-radius: 7px; padding: 9px 13px; margin-top: 14px; line-height: 1.55; }
+
+  /* ── TOP-LEVEL NAV ── */
+  .top-nav { display: flex; max-width: 980px; margin: 0 auto; padding: 0 40px; border-bottom: 2px solid var(--rule); margin-top: 22px; position: sticky; top: 58px; background: var(--paper); z-index: 90; }
+  .top-nav-btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400; color: var(--ink-light); padding: 12px 22px; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .top-nav-btn:hover { color: var(--ink); }
+  .top-nav-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+  .top-nav-num { width: 22px; height: 22px; border-radius: 50%; background: var(--rule); color: var(--ink-light); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .top-nav-btn.active .top-nav-num { background: var(--navy); color: #fff; }
+
+  /* ── MAIN ── */
+  .main { max-width: 980px; margin: 0 auto; padding: 28px 40px 100px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeUp 0.25s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SUB NAV (tabs within section 2) ── */
+  .sub-nav { display: flex; gap: 0; border-bottom: 1px solid var(--rule); margin-bottom: 22px; position: sticky; top: 105px; background: var(--paper); z-index: 89; }
+  .sub-nav-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink-light); padding: 9px 20px; border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+  .sub-nav-btn:hover { color: var(--ink); }
+  .sub-nav-btn.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 600; }
+  .sub-panel { display: none; }
+  .sub-panel.active { display: block; animation: fadeUp 0.2s ease; }
+
+  /* ── FORM CARDS ── */
+  .form-card { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); padding: 22px 24px; margin-bottom: 18px; box-shadow: var(--shadow-sm); }
+  .form-card-title { font-size: 14px; font-weight: 600; color: var(--navy); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .form-card-desc { font-size: 13px; color: var(--ink-light); margin-bottom: 18px; line-height: 1.6; }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+  /* ── FIELDS ── */
+  .field-row { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field-label { font-size: 13px; font-weight: 600; color: var(--ink-mid); }
+  .field-hint { font-size: 12px; color: var(--ink-light); font-style: italic; }
+  textarea, input.txt-input, select.txt-select { font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--ink); background: var(--white); border: 1px solid var(--rule); border-radius: 7px; padding: 9px 12px; width: 100%; resize: vertical; min-height: 80px; line-height: 1.55; transition: border-color 0.15s; }
+  textarea:focus, input.txt-input:focus, select.txt-select:focus { outline: none; border-color: var(--steel); box-shadow: 0 0 0 3px rgba(37,99,168,0.1); }
+  input.txt-input, select.txt-select { min-height: unset; resize: none; }
+  select.txt-select { cursor: pointer; }
+  .prefill-note { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--teal); background: var(--teal-light); padding: 2px 9px; border-radius: 999px; margin-left: 8px; font-weight: 500; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ── TAG INPUT ── */
+  .tag-wrap { display: flex; flex-wrap: wrap; gap: 5px; padding: 7px 10px; background: var(--white); border: 1px solid var(--rule); border-radius: 7px; cursor: text; transition: border-color 0.15s; min-height: 44px; align-items: center; }
+  .tag-wrap:focus-within { border-color: var(--steel); box-shadow: 0 0 0 3px rgba(37,99,168,0.1); }
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: var(--navy-light); color: var(--navy); font-size: 12.5px; font-weight: 500; }
+  .tag.teal { background: var(--teal-light); color: var(--teal); }
+  .tag-remove { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; opacity: 0.6; }
+  .tag-remove:hover { opacity: 1; }
+  .tag-input-field { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--ink); min-width: 130px; flex: 1; padding: 2px 4px; }
+  .tag-input-field:focus { outline: none; }
+  .tag-hint { font-size: 11.5px; color: var(--ink-light); margin-top: 4px; font-style: italic; }
+
+  /* ── CULTURE CHIPS ── */
+  .culture-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .culture-chip { padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 400; border: 1.5px solid var(--rule); color: var(--ink-mid); background: var(--paper); cursor: pointer; transition: all 0.14s; user-select: none; }
+  .culture-chip:hover { border-color: var(--teal); color: var(--teal); }
+  .culture-chip.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal); font-weight: 500; }
+
+  /* ── CHOICE CARDS (build/buy, facing, budget, etc.) ── */
+  .choice-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 4px; }
+  .choice-group.col1 { grid-template-columns: 1fr; }
+  .choice-group.col2 { grid-template-columns: 1fr 1fr; }
+  .choice { background: var(--paper); border: 1.5px solid var(--rule); border-radius: 9px; padding: 12px 14px; cursor: pointer; transition: all 0.14s; }
+  .choice:hover { border-color: var(--steel); background: var(--steel-light); }
+  .choice.selected { border-color: var(--steel); background: var(--steel-light); }
+  .choice-icon { font-size: 20px; margin-bottom: 6px; }
+  .choice-label { font-size: 13.5px; font-weight: 500; color: var(--ink); line-height: 1.4; margin-bottom: 3px; }
+  .choice-sub { font-size: 12px; color: var(--ink-light); line-height: 1.4; }
+
+  /* ── MULTI-SELECT (scope) ── */
+  .multi-group { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .multi { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 9px; border: 1.5px solid var(--rule); cursor: pointer; transition: all 0.14s; background: var(--paper); }
+  .multi:hover { border-color: var(--steel); background: var(--steel-light); }
+  .multi.selected { border-color: var(--steel); background: var(--steel-light); }
+  .multi-check { width: 18px; height: 18px; border-radius: 4px; border: 2px solid var(--rule); background: var(--white); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.14s; }
+  .multi.selected .multi-check { background: var(--steel); border-color: var(--steel); }
+  .multi-check-mark { display: none; color: #fff; font-size: 11px; font-weight: 700; }
+  .multi.selected .multi-check-mark { display: block; }
+
+  /* ── PAIN POINTS ── */
+  .pain-section-hdr { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--rule); display: flex; align-items: center; gap: 8px; }
+  .rank-row { display: grid; grid-template-columns: 1fr 150px; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 9px; margin-bottom: 6px; background: var(--paper); }
+  .rank-row-name { font-size: 13.5px; font-weight: 500; color: var(--ink); display: flex; align-items: flex-start; gap: 8px; }
+  .rank-row-icon { font-size: 17px; }
+  .rank-select { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--steel); background: var(--white); border: 1.5px solid var(--rule); border-radius: 7px; padding: 7px 10px; cursor: pointer; transition: border-color 0.15s; }
+  .rank-select:focus { outline: none; border-color: var(--steel); }
+  .rank-notes-toggle { font-family: 'DM Sans', sans-serif; font-size: 11.5px; font-weight: 500; color: var(--steel); background: var(--steel-light); border: 1px solid #c5d8f0; border-radius: 6px; padding: 3px 10px; cursor: pointer; margin: 6px 0 14px; transition: all 0.14s; }
+  .rank-notes-toggle:hover { background: #dbeafe; }
+  .rank-notes-wrap { margin: 0 0 14px; }
+  .rank-notes-input { font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--white); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 12px; width: 100%; min-height: 60px; resize: vertical; line-height: 1.5; }
+  .rank-notes-input:focus { outline: none; border-color: var(--steel); box-shadow: 0 0 0 3px rgba(37,99,168,0.08); }
+
+  /* External pain points add-list */
+  .pain-dim { background: var(--white); border: 1px solid var(--rule); border-radius: var(--r); margin-bottom: 14px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .pain-dim-hdr { padding: 13px 18px; display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid var(--rule); background: var(--paper); }
+  .pain-dim-icon { font-size: 20px; flex-shrink: 0; }
+  .pain-dim-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .pain-dim-desc { font-size: 12.5px; color: var(--ink-light); margin-top: 2px; line-height: 1.5; }
+  .pain-dim-body { padding: 14px 18px; }
+  .pain-items { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
+  .pain-item { display: flex; align-items: center; gap: 8px; background: var(--paper); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 12px; }
+  .pain-item-text { flex: 1; font-size: 13.5px; color: var(--ink); line-height: 1.45; }
+  .pain-item-remove { background: none; border: none; color: var(--ink-faint); cursor: pointer; font-size: 18px; line-height: 1; padding: 0; transition: color 0.12s; }
+  .pain-item-remove:hover { color: var(--red); }
+  .pain-add-row { display: flex; gap: 8px; }
+  .pain-add-input { font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--ink); background: var(--white); border: 1px solid var(--rule); border-radius: 7px; padding: 8px 12px; flex: 1; transition: border-color 0.15s; }
+  .pain-add-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15,118,110,0.1); }
+  .pain-add-btn { font-family: 'DM Sans', sans-serif; font-size: 12.5px; font-weight: 600; color: var(--teal); background: var(--teal-light); border: 1.5px solid rgba(15,118,110,0.3); border-radius: 7px; padding: 8px 14px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+  .pain-add-btn:hover { background: #d0eeeb; border-color: var(--teal); }
+
+  /* ── FOOTER ── */
+  .tool-footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--rule); padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; z-index: 99; box-shadow: 0 -2px 10px rgba(30,58,95,0.06); }
+  .footer-status { font-size: 12px; color: var(--ink-light); display: flex; align-items: center; gap: 5px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-faint); }
+  .status-dot.saved { background: var(--green); }
+
+  /* ── OUTPUT MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(20,30,50,0.6); z-index: 1000; overflow-y: auto; padding: 28px 20px; }
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+  .modal { background: var(--paper); border-radius: 14px; max-width: 940px; width: 100%; box-shadow: 0 16px 56px rgba(30,58,95,0.22); overflow: hidden; }
+  .modal-hdr { background: var(--navy); color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .modal-hdr-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 20px; }
+  .modal-close { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-body { padding: 26px 28px; }
+
+  .out-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px; }
+  .out-value { font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+  .out-block { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 13px 16px; margin-bottom: 12px; }
+  .out-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); margin: 22px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--rule); }
+  .out-section-title:first-child { margin-top: 0; }
+  .pill { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 500; margin: 2px 3px; }
+  .pill-navy { background: var(--navy-light); color: var(--navy); }
+  .pill-teal { background: var(--teal-light); color: var(--teal); }
+  .pill-violet { background: var(--violet-bg); color: var(--violet); }
+  .pill-empty { font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+
+  /* ── PRINT ── */
+  @media print {
+    @page { size: A4 portrait; margin: 12mm; }
+    body { background: #fff !important; }
+    body > *:not(#print-container) { display: none !important; }
+    .tool-header, .top-nav, .sub-nav, .tool-footer,
+    .intro-banner, .no-print, .modal-overlay { display: none !important; }
+    #print-container { display: block !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+
+  @media (max-width: 680px) {
+    .main, .intro-banner, .top-nav { padding-left: 16px; padding-right: 16px; }
+    .tool-header, .tool-footer { padding-left: 16px; padding-right: 16px; }
+    .info-grid, .choice-group, .choice-group.col2 { grid-template-columns: 1fr; }
+    .rank-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     HEADER
+══════════════════════════════════ -->
+<header class="tool-header no-print">
+  <div class="th-inner">
+    <div>
+      <div class="th-eyebrow">COHUMAIN | Blue Flame Research</div>
+      <div class="th-title">AI Use Case Screening</div>
+    </div>
+    <div class="th-actions">
+      <button class="btn btn-ghost btn-sm" onclick="saveSession()">&#8681; Save</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('loadFile').click()">&#8679; Load</button>
+      <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadSession(event)">
+      <button class="btn btn-gold btn-sm" onclick="openSummary()">&#128203; Generate Summary</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════
+     INTRO
+══════════════════════════════════ -->
+<div class="intro-banner no-print">
+  <div class="intro-card">
+    <div class="intro-title">Pre-Meeting Discovery Screener</div>
+    <div class="intro-desc">
+      This short questionnaire will help us to understand your organization's priorities and current thinking about AI
+      implementation considerations to ensure that we have a productive AI discovery session. It should take about
+      10–15 minutes to complete. There are no right or wrong answers — the goal is simply to give us useful context so
+      we can make the most of our time together. When finished, please click <strong>Generate Summary</strong> which
+      will create a PDF file that you can save and send back to us prior to the AI Discovery Session. This information
+      will be kept confidential and will only be used to inform our discussions and planning with you. We appreciate
+      you taking the time to provide these insights.
+    </div>
+    <div class="save-load-tip">
+      <strong>Tip:</strong> To save your responses, click <strong>Save</strong> — and when resuming, click <strong>Load</strong> to pick up where you left off.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     TOP NAV
+══════════════════════════════════ -->
+<nav class="top-nav no-print">
+  <button class="top-nav-btn active" data-panel="p1" onclick="switchPanel('p1', this)">
+    <span class="top-nav-num">1</span> Company Identity
+  </button>
+  <button class="top-nav-btn" data-panel="p2" onclick="switchPanel('p2', this)">
+    <span class="top-nav-num">2</span> AI Discovery Screening
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════
+     MAIN
+══════════════════════════════════ -->
+<main class="main">
+
+  <!-- ════ PANEL 1: COMPANY IDENTITY ════ -->
+  <div class="panel active" id="p1">
+
+    <!-- Basic Info -->
+    <div class="form-card">
+      <div class="form-card-title"><span class="step-num">1</span> Basic Information</div>
+      <div class="form-card-desc">Tell us a bit about your organization.</div>
+      <div class="info-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="field-row">
+          <label class="field-label">Company Name</label>
+          <input class="txt-input" type="text" id="meta_company" placeholder="e.g. Acme Corporation" oninput="autosave()">
+        </div>
+        <div class="field-row">
+          <label class="field-label">Size (Number of Employees)</label>
+          <input class="txt-input" type="text" id="meta_size" placeholder="e.g. 250" oninput="autosave()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission & Values -->
+    <div class="form-card">
+      <div class="form-card-title"><span class="step-num">2</span> Mission &amp; Core Values</div>
+      <div class="form-card-desc">If these fields are already filled in, they were pre-populated from your organization's website by Blue Flame Research — please review and edit if anything is inaccurate or out of date.</div>
+
+      <div class="field-row">
+        <label class="field-label">Mission Statement <span class="prefill-note" id="mission-prefill-badge" style="display:none;">&#10003; Pre-filled — editable</span></label>
+        <textarea id="id_mission" placeholder="Enter the company's mission statement…" rows="3" oninput="autosave()"></textarea>
+      </div>
+
+      <div class="field-row">
+        <label class="field-label">Core Values <span class="prefill-note" id="values-prefill-badge" style="display:none;">&#10003; Pre-filled — editable</span></label>
+        <span class="field-hint">Type a value and press Enter to add it as a tag — remove any that aren't accurate</span>
+        <div class="tag-wrap" id="values-wrap" onclick="document.getElementById('values-input').focus()">
+          <input class="tag-input-field" id="values-input" placeholder="Type a value and press Enter…" onkeydown="handleTagKey(event,'values')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategic Goals -->
+    <div class="form-card">
+      <div class="form-card-title"><span class="step-num">3</span> Strategic Goals</div>
+      <div class="form-card-desc">What are your organization's top strategic priorities over the next 1–3 years?</div>
+      <div class="field-row">
+        <label class="field-label">Strategic Goals</label>
+        <span class="field-hint">Type a goal and press Enter to add it as a tag</span>
+        <div class="tag-wrap" id="goals-wrap" onclick="document.getElementById('goals-input').focus()">
+          <input class="tag-input-field" id="goals-input" placeholder="Type a strategic goal and press Enter…" onkeydown="handleTagKey(event,'goals')">
+        </div>
+        <span class="tag-hint">e.g. Expand into new markets, Reduce operational costs by 20%, Improve customer retention</span>
+      </div>
+    </div>
+
+    <!-- Company Culture -->
+    <div class="form-card">
+      <div class="form-card-title"><span class="step-num">4</span> Company Culture</div>
+      <div class="form-card-desc">Select any concepts below that represent how your organization operates and what it values — or add your own.</div>
+      <div class="culture-grid" id="culture-grid"></div>
+      <div class="field-row" style="margin-top:6px;">
+        <label class="field-label">Add your own culture concepts</label>
+        <span class="field-hint">Type a concept and press Enter to add it as a tag</span>
+        <div class="tag-wrap" id="culture-other-wrap" onclick="document.getElementById('culture-other-input').focus()">
+          <input class="tag-input-field" id="culture-other-input" placeholder="Type a concept and press Enter…" onkeydown="handleTagKey(event,'cultureOther')">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+      <button class="btn btn-primary" onclick="switchPanel('p2', document.querySelector('[data-panel=p2]'))">Next: AI Discovery Screening →</button>
+    </div>
+  </div><!-- end p1 -->
+
+  <!-- ════ PANEL 2: AI DISCOVERY SCREENING ════ -->
+  <div class="panel" id="p2">
+
+    <!-- SUB NAV -->
+    <nav class="sub-nav no-print">
+      <button class="sub-nav-btn active" data-sub="sub1" onclick="switchSub('sub1', this)">Pain Points</button>
+      <button class="sub-nav-btn" data-sub="sub2" onclick="switchSub('sub2', this)">Intent &amp; Scope</button>
+      <button class="sub-nav-btn" data-sub="sub3" onclick="switchSub('sub3', this)">Resource Considerations</button>
+    </nav>
+
+    <!-- ── SUB 1: PAIN POINTS ── -->
+    <div class="sub-panel active" id="sub1">
+
+      <!-- Internal Pain Points -->
+      <div class="pain-section-hdr">&#9881; Internal Pain Points</div>
+      <div class="form-card">
+        <div class="form-card-desc">Please rank the following areas in order of importance — <strong>1 = most pressing concern</strong>, <strong>4 = least pressing</strong> — based on where your organization feels the most friction or encounters the greatest challenges today. You may add notes with additional details to elaborate on specific pain points or areas for improvement. Adding notes for any category is optional.</div>
+        <div id="internal-pain-list"></div>
+      </div>
+
+      <!-- External Pain Points -->
+      <div class="pain-section-hdr" style="margin-top:24px;">&#127760; External Pain Points (Users / Clients)</div>
+      <div class="form-card" style="margin-bottom:14px;">
+        <div class="form-card-desc" style="margin-bottom:0;">Please add pain points or challenges that are known to the company about its products, based on client or user feedback, or contextual challenges that affect products and services more broadly, that the company is seeking to address. Add as many as needed.</div>
+      </div>
+      <div id="external-pain-container"></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+        <button class="btn btn-primary" onclick="switchSub('sub2', document.querySelector('[data-sub=sub2]'))">Next: Intent &amp; Scope →</button>
+      </div>
+    </div>
+
+    <!-- ── SUB 2: INTENT & SCOPE ── -->
+    <div class="sub-panel" id="sub2">
+
+      <div class="form-card" style="border-left:4px solid var(--steel);">
+        <div class="form-card-desc" style="margin-bottom:0;">Please provide the following information about your company's plans and expectations for implementing AI tools or systems to facilitate discovery discussions.</div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">1</span> AI Implementation Expectations</div>
+        <div class="form-card-desc">What results are you hoping or expecting from AI implementation?</div>
+        <textarea id="s_expectations" placeholder="Describe the anticipated outcomes, goals, or value you expect from implementing AI…" rows="4" oninput="autosave()"></textarea>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">2</span> Build or Buy</div>
+        <div class="form-card-desc">Is your organization considering purchasing off-the-shelf AI solutions, building its own, or a combination? Select one.</div>
+        <div class="choice-group" id="s_buildbuy">
+          <div class="choice" onclick="selectChoice('s_buildbuy','buy',this)">
+            <div class="choice-icon">&#128722;</div>
+            <div class="choice-label">Buy — off-the-shelf AI solutions</div>
+            <div class="choice-sub">Procure and license existing AI products from vendors or providers</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_buildbuy','build',this)">
+            <div class="choice-icon">&#128295;</div>
+            <div class="choice-label">Build — develop AI solutions internally</div>
+            <div class="choice-sub">Design and develop custom AI systems using internal resources</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_buildbuy','both',this)">
+            <div class="choice-icon">&#9889;</div>
+            <div class="choice-label">Combination — buy and build</div>
+            <div class="choice-sub">Procure some solutions while developing custom components internally</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">3</span> Scope of AI Implementation</div>
+        <div class="form-card-desc">Is your organization thinking of implementing AI broadly or in a more targeted way? Select all that apply.</div>
+        <div class="multi-group" id="s_scope">
+          <div class="multi" onclick="toggleMulti('s_scope','broad',this)">
+            <div class="multi-check"><span class="multi-check-mark">&#10003;</span></div>
+            <div>
+              <div class="choice-label">Broadly, across the entire organization</div>
+              <div class="choice-sub">AI implementation intended to touch most or all parts of the business</div>
+            </div>
+          </div>
+          <div class="multi" onclick="toggleMulti('s_scope','divisions',this)">
+            <div class="multi-check"><span class="multi-check-mark">&#10003;</span></div>
+            <div>
+              <div class="choice-label">Among specific divisions or departments</div>
+              <div class="choice-sub">Targeted implementation within defined business units or functional areas</div>
+            </div>
+          </div>
+          <div class="multi" onclick="toggleMulti('s_scope','narrow',this)">
+            <div class="multi-check"><span class="multi-check-mark">&#10003;</span></div>
+            <div>
+              <div class="choice-label">For narrow or targeted purposes</div>
+              <div class="choice-sub">Focused on specific use cases, tasks, or workflows rather than broad adoption</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">4</span> Internal-Facing vs. External-Facing AI</div>
+        <div class="form-card-desc">What are your initial thoughts on the direction of AI implementation? Select one.</div>
+        <div class="choice-group" id="s_facing">
+          <div class="choice" onclick="selectChoice('s_facing','external',this)">
+            <div class="choice-icon">&#127760;</div>
+            <div class="choice-label">External-facing AI</div>
+            <div class="choice-sub">For clients, customers, or external users — products, services, or client-facing tools</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_facing','internal',this)">
+            <div class="choice-icon">&#9881;&#65039;</div>
+            <div class="choice-label">Internal-facing AI</div>
+            <div class="choice-sub">For internal operations, efficiencies, workflows, or employee-facing tools</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_facing','both',this)">
+            <div class="choice-icon">&#8596;&#65039;</div>
+            <div class="choice-label">Both internal and external-facing</div>
+            <div class="choice-sub">AI initiatives intended to serve both internal teams and external stakeholders</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+        <button class="btn btn-primary" onclick="switchSub('sub3', document.querySelector('[data-sub=sub3]'))">Next: Resource Considerations →</button>
+      </div>
+    </div>
+
+    <!-- ── SUB 3: RESOURCE CONSIDERATIONS ── -->
+    <div class="sub-panel" id="sub3">
+
+      <div class="form-card" style="border-left:4px solid var(--steel);">
+        <div class="form-card-desc" style="margin-bottom:0;">Please outline the resource considerations that have thus far been planned for AI initiatives.</div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">1</span> Budget Source</div>
+        <div class="form-card-desc">Based on current plans, where is the budget for AI investment likely to come from?</div>
+        <div class="choice-group col2" id="s_budget">
+          <div class="choice" onclick="selectChoice('s_budget','company',this)">
+            <div class="choice-label">Company overhead / technology budget</div>
+            <div class="choice-sub">Centrally funded from overall IT or infrastructure investment</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_budget','shared',this)">
+            <div class="choice-label">Shared across divisions or teams</div>
+            <div class="choice-sub">Budget distributed or co-contributed across business units</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_budget','other',this)">
+            <div class="choice-label">Other</div>
+            <div class="choice-sub">Alternative funding structure</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_budget','undetermined',this)">
+            <div class="choice-label">Undetermined</div>
+            <div class="choice-sub">Budget source not yet decided</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">2</span> Human Resources Available for AI</div>
+        <div class="form-card-desc">What human resources are available to dedicate to AI initiatives, including piloting, implementation, governance, and ongoing oversight?</div>
+        <div class="choice-group" id="s_human_res">
+          <div class="choice" onclick="selectChoice('s_human_res','limited',this)">
+            <div class="choice-icon">&#128100;</div>
+            <div class="choice-label">Limited — Equivalent to 1 to 3 FTEs</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_human_res','moderate',this)">
+            <div class="choice-icon">&#128101;</div>
+            <div class="choice-label">Moderate — Equivalent to 4 to 10 FTEs</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_human_res','considerable',this)">
+            <div class="choice-icon">&#127970;</div>
+            <div class="choice-label">Considerable — More than 10 FTEs</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title"><span class="step-num">3</span> Level of AI Investment</div>
+        <div class="form-card-desc" style="font-style:italic;">Which of the following statements is the level at which the company is most comfortable for an initial AI investment?</div>
+        <div class="choice-group col1" id="s_invest_level">
+          <div class="choice" onclick="selectChoice('s_invest_level','strategic',this)">
+            <div class="choice-label">Strategic priority — AI is a significant focus and hitting projected returns is critical to current strategic and innovation goals</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_invest_level','growth',this)">
+            <div class="choice-label">Growth investment — AI is intended to help achieve accelerated growth, but if returns are not fully realized it will not threaten the stability of the core business</div>
+          </div>
+          <div class="choice" onclick="selectChoice('s_invest_level','cautious',this)">
+            <div class="choice-label">Cautious start — the company wants to ease into AI investment, starting small in scope and progressively building out investment after ROI is assessed</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px;">
+        <button class="btn btn-gold" onclick="openSummary()">&#128203; Generate Summary →</button>
+      </div>
+    </div>
+
+  </div><!-- end p2 -->
+
+</main>
+
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer class="tool-footer no-print">
+  <div class="footer-status">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">No changes yet</span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-light btn-sm" onclick="switchPanel('p1',document.querySelector('[data-panel=p1]'))">Company Identity</button>
+    <button class="btn btn-light btn-sm" onclick="switchPanel('p2',document.querySelector('[data-panel=p2]'))">AI Discovery Screening</button>
+    <button class="btn btn-gold btn-sm" onclick="openSummary()">&#128203; Generate Summary</button>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════
+     SUMMARY MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modal-summary">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-hdr-title">Discovery Screening Summary</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-light btn-sm no-print" onclick="printModal('modal-summary')">&#128438; Print / Save PDF</button>
+        <button class="modal-close no-print" onclick="closeModal('modal-summary')">&#215;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="output-summary"></div>
+  </div>
+</div>
+
+<!-- Hidden print container -->
+<div id="print-container" style="display:none;"></div>
+
+<script>
+// ════════════════════════════════════════════
+// PRE-FILL CONFIGURATION
+// Before sending this file to a specific client, fill in any information
+// you've gathered from researching their website. These values will
+// pre-populate the Mission Statement and Core Values fields below —
+// the client can still review and edit them.
+// ════════════════════════════════════════════
+const PREFILL = {
+  company: '',
+  size: '',
+  mission: '',
+  values: [], // e.g. ['Integrity', 'Innovation', 'Customer Focus']
+};
+
+// ════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════
+const CULTURE_OPTS = [
+  'Integrity','Efficiency','Results-driven','Transparency','Creativity',
+  'Collaboration','People / human-centered','Quality','Innovation','Customer service'
+];
+
+const INTERNAL_PAIN_CATS = [
+  { id:'operations',  icon:'&#9881;&#65039;', name:'Operational Pain Points',
+    desc:'Inefficiencies, bottlenecks, resource constraints, process failures, or quality issues in day-to-day operations' },
+  { id:'growth',       icon:'&#128200;', name:'Growth &amp; Stagnation',
+    desc:'Barriers to scaling, market share challenges, revenue plateaus, talent pipeline gaps, or difficulty entering new markets' },
+  { id:'innovation',   icon:'&#128161;', name:'Innovation Challenges',
+    desc:'Difficulty generating new ideas, slow technology adoption, lack of R&amp;D investment, or cultural resistance to change' },
+  { id:'competition',  icon:'&#127937;', name:'Competitive Pressures',
+    desc:'Threats from existing competitors, emerging disruptors, pricing pressures, differentiation challenges, or market positioning concerns' },
+];
+
+const EXTERNAL_PAIN_DIMS = [
+  { id:'product_pain', icon:'&#128230;', name:'Product Pain Points',
+    desc:'Pain points your users or clients have expressed directly — known issues, frustrations, or unmet needs related to your products or services' },
+  { id:'contextual_pain', icon:'&#128506;&#65039;', name:'Contextual Pain Points',
+    desc:'Known pain points inherent to your industry or delivery context — challenges that affect your product or service category more broadly' },
+];
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+const D = {
+  meta: { company:'', size:'' },
+  identity: { mission:'', values:[], goals:[], culture:[], cultureOther:[] },
+  pain: {
+    internal: {
+      operations: { rank:'', notes:'' },
+      growth:     { rank:'', notes:'' },
+      innovation: { rank:'', notes:'' },
+      competition:{ rank:'', notes:'' },
+    },
+    external: { product_pain:[], contextual_pain:[] },
+  },
+  intent: { expectations:'', buildbuy:'', scope:[], facing:'' },
+  resources: { budget:'', humanRes:'', investLevel:'' },
+};
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+function init() {
+  buildCultureGrid();
+  buildInternalPainList();
+  buildExternalPainDims();
+  applyPrefill();
+  loadFromStorage();
+}
+
+function applyPrefill() {
+  if (PREFILL.company && !D.meta.company) document.getElementById('meta_company').value = PREFILL.company;
+  if (PREFILL.size    && !D.meta.size)    document.getElementById('meta_size').value    = PREFILL.size;
+  if (PREFILL.mission && !D.identity.mission) {
+    document.getElementById('id_mission').value = PREFILL.mission;
+    D.identity.mission = PREFILL.mission;
+    document.getElementById('mission-prefill-badge').style.display = 'inline-flex';
+  }
+  if (PREFILL.values && PREFILL.values.length && !D.identity.values.length) {
+    D.identity.values = [...PREFILL.values];
+    renderTags('values');
+    document.getElementById('values-prefill-badge').style.display = 'inline-flex';
+  }
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function switchPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.top-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchSub(id, btn) {
+  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sub-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════════
+// TAG INPUT (values, goals, custom culture)
+// ════════════════════════════════════════════
+function handleTagKey(e, type) {
+  const arr = getTagArray(type);
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,$/, '');
+    if (!val) return;
+    arr.push(val);
+    renderTags(type);
+    e.target.value = '';
+    autosave();
+  }
+  if (e.key === 'Backspace' && e.target.value === '') {
+    if (arr.length) { arr.pop(); renderTags(type); autosave(); }
+  }
+}
+
+function getTagArray(type) {
+  if (type === 'values')      return D.identity.values;
+  if (type === 'goals')       return D.identity.goals;
+  if (type === 'cultureOther') return D.identity.cultureOther;
+  return [];
+}
+
+function renderTags(type) {
+  const arr  = getTagArray(type);
+  const wrapId  = type === 'cultureOther' ? 'culture-other-wrap' : (type + '-wrap');
+  const inputId = type === 'cultureOther' ? 'culture-other-input' : (type + '-input');
+  const wrap = document.getElementById(wrapId);
+  const inp  = document.getElementById(inputId);
+  wrap.querySelectorAll('.tag').forEach(t => t.remove());
+  const tagClass = type === 'cultureOther' ? 'tag teal' : 'tag';
+  arr.forEach((v, i) => {
+    const tag = document.createElement('span');
+    tag.className = tagClass;
+    tag.innerHTML = esc(v) + ' <button class="tag-remove" onclick="removeTag(\'' + type + '\',' + i + ')">×</button>';
+    wrap.insertBefore(tag, inp);
+  });
+}
+
+function removeTag(type, idx) {
+  getTagArray(type).splice(idx, 1);
+  renderTags(type);
+  autosave();
+}
+
+// ════════════════════════════════════════════
+// CULTURE GRID
+// ════════════════════════════════════════════
+function buildCultureGrid() {
+  const grid = document.getElementById('culture-grid');
+  grid.innerHTML = '';
+  CULTURE_OPTS.forEach(opt => {
+    const chip = document.createElement('div');
+    chip.className = 'culture-chip';
+    chip.dataset.value = opt;
+    chip.textContent = opt;
+    chip.onclick = () => toggleCulture(chip, opt);
+    grid.appendChild(chip);
+  });
+}
+
+function toggleCulture(chip, val) {
+  if (chip.classList.contains('selected')) {
+    chip.classList.remove('selected');
+    D.identity.culture = D.identity.culture.filter(v => v !== val);
+  } else {
+    chip.classList.add('selected');
+    D.identity.culture.push(val);
+  }
+  autosave();
+}
+
+// ════════════════════════════════════════════
+// INTERNAL PAIN POINTS — ranked dropdowns with swap logic
+// ════════════════════════════════════════════
+function buildInternalPainList() {
+  const container = document.getElementById('internal-pain-list');
+  container.innerHTML = '';
+  INTERNAL_PAIN_CATS.forEach(cat => {
+    const data = D.pain.internal[cat.id];
+    const row = document.createElement('div');
+    row.innerHTML = `
+      <div class="rank-row">
+        <div class="rank-row-name"><span class="rank-row-icon">${cat.icon}</span>
+          <div>
+            <div>${cat.name}</div>
+            <div style="font-size:11.5px;color:var(--ink-light);font-weight:400;margin-top:2px;">${cat.desc}</div>
+          </div>
+        </div>
+        <select class="rank-select" id="rank-${cat.id}" onchange="setPainRank('${cat.id}',this.value)">
+          <option value="">— Rank —</option>
+          <option value="1">1 (Most pressing)</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4 (Least pressing)</option>
+        </select>
+      </div>
+      <button class="rank-notes-toggle" id="rnt-${cat.id}" onclick="toggleRankNotes('${cat.id}')">${data.notes ? '&#128221; Notes' : '+ Add notes'}</button>
+      <div class="rank-notes-wrap" id="rnw-${cat.id}" style="display:${data.notes ? 'block':'none'};">
+        <textarea class="rank-notes-input" placeholder="Add any details about this pain point (optional)…" oninput="setPainNotes('${cat.id}',this.value)">${esc(data.notes)}</textarea>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function setPainRank(catId, val) {
+  const old = D.pain.internal[catId].rank;
+  if (val) {
+    Object.keys(D.pain.internal).forEach(otherId => {
+      if (otherId !== catId && D.pain.internal[otherId].rank === val) {
+        D.pain.internal[otherId].rank = old;
+        const sel = document.getElementById('rank-' + otherId);
+        if (sel) sel.value = old;
+      }
+    });
+  }
+  D.pain.internal[catId].rank = val;
+  autosave();
+}
+
+function toggleRankNotes(catId) {
+  const wrap = document.getElementById('rnw-' + catId);
+  const open = wrap.style.display !== 'none';
+  wrap.style.display = open ? 'none' : 'block';
+  if (!open) wrap.querySelector('textarea')?.focus();
+}
+
+function setPainNotes(catId, val) {
+  D.pain.internal[catId].notes = val;
+  const btn = document.getElementById('rnt-' + catId);
+  if (btn) btn.innerHTML = val.trim() ? '&#128221; Notes' : '+ Add notes';
+  autosave();
+}
+
+// ════════════════════════════════════════════
+// EXTERNAL PAIN POINTS — free-text add lists
+// ════════════════════════════════════════════
+function buildExternalPainDims() {
+  const c = document.getElementById('external-pain-container');
+  c.innerHTML = '';
+  EXTERNAL_PAIN_DIMS.forEach(dim => {
+    D.pain.external[dim.id] = D.pain.external[dim.id] || [];
+    const div = document.createElement('div');
+    div.className = 'pain-dim';
+    div.innerHTML = `
+      <div class="pain-dim-hdr">
+        <span class="pain-dim-icon">${dim.icon}</span>
+        <div>
+          <div class="pain-dim-name">${dim.name}</div>
+          <div class="pain-dim-desc">${dim.desc}</div>
+        </div>
+      </div>
+      <div class="pain-dim-body">
+        <div class="pain-items" id="pi-${dim.id}"></div>
+        <div class="pain-add-row">
+          <input class="pain-add-input" type="text" id="pa-${dim.id}"
+            placeholder="Describe a pain point and press Enter or click Add…"
+            onkeydown="if(event.key==='Enter')addPainItem('${dim.id}')">
+          <button class="pain-add-btn" onclick="addPainItem('${dim.id}')">+ Add</button>
+        </div>
+      </div>`;
+    c.appendChild(div);
+    renderPainItems(dim.id);
+  });
+}
+
+function addPainItem(dimId) {
+  const inp = document.getElementById('pa-' + dimId);
+  const val = inp.value.trim();
+  if (!val) return;
+  D.pain.external[dimId].push(val);
+  inp.value = '';
+  renderPainItems(dimId);
+  autosave();
+}
+
+function removePainItem(dimId, idx) {
+  D.pain.external[dimId].splice(idx, 1);
+  renderPainItems(dimId);
+  autosave();
+}
+
+function renderPainItems(dimId) {
+  const list = document.getElementById('pi-' + dimId);
+  if (!list) return;
+  list.innerHTML = '';
+  (D.pain.external[dimId] || []).forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'pain-item';
+    div.innerHTML = `<span class="pain-item-text">${esc(item)}</span>
+      <button class="pain-item-remove" onclick="removePainItem('${dimId}',${i})" title="Remove">×</button>`;
+    list.appendChild(div);
+  });
+}
+
+// ════════════════════════════════════════════
+// CHOICE / MULTI SELECTORS
+// ════════════════════════════════════════════
+function selectChoice(groupId, val, el) {
+  document.querySelectorAll('#' + groupId + ' .choice').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (groupId === 's_buildbuy')     D.intent.buildbuy    = val;
+  if (groupId === 's_facing')       D.intent.facing      = val;
+  if (groupId === 's_budget')       D.resources.budget   = val;
+  if (groupId === 's_human_res')    D.resources.humanRes = val;
+  if (groupId === 's_invest_level') D.resources.investLevel = val;
+  autosave();
+}
+
+function toggleMulti(groupId, val, el) {
+  el.classList.toggle('selected');
+  if (groupId === 's_scope') {
+    if (el.classList.contains('selected')) { if (!D.intent.scope.includes(val)) D.intent.scope.push(val); }
+    else D.intent.scope = D.intent.scope.filter(v => v !== val);
+  }
+  autosave();
+}
+
+// ════════════════════════════════════════════
+// SUMMARY OUTPUT
+// ════════════════════════════════════════════
+function openSummary() {
+  buildSummary();
+  document.getElementById('modal-summary').classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function buildSummary() {
+  const co = document.getElementById('meta_company').value || 'Your Organization';
+  const size = document.getElementById('meta_size').value;
+  const mission = document.getElementById('id_mission').value;
+
+  const pill = (txt, cls) => `<span class="pill ${cls}">${esc(txt)}</span>`;
+  const empty = '<span class="pill-empty">Not provided</span>';
+
+  // Internal pain points sorted by rank
+  const rankedInternal = INTERNAL_PAIN_CATS
+    .map(cat => ({ ...cat, data: D.pain.internal[cat.id] }))
+    .filter(c => c.data.rank)
+    .sort((a,b) => parseInt(a.data.rank) - parseInt(b.data.rank));
+  const unrankedInternal = INTERNAL_PAIN_CATS.filter(cat => !D.pain.internal[cat.id].rank);
+
+  const internalHtml = rankedInternal.length
+    ? rankedInternal.map(cat => `
+        <div class="out-block">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:${cat.data.notes ? '6px':'0'};">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:700;flex-shrink:0;">${cat.data.rank}</span>
+            <span style="font-size:14px;">${cat.icon}</span>
+            <span style="font-size:13.5px;font-weight:600;color:var(--ink);">${cat.name}</span>
+          </div>
+          ${cat.data.notes ? `<div style="font-size:13px;color:var(--ink-mid);line-height:1.55;padding-left:34px;">${esc(cat.data.notes)}</div>` : ''}
+        </div>`).join('')
+    : '<div class="pill-empty">No rankings provided</div>';
+
+  const unrankedHtml = unrankedInternal.length
+    ? `<div style="font-size:12px;color:var(--ink-light);margin-top:6px;">Not ranked: ${unrankedInternal.map(c => c.name).join(', ')}</div>`
+    : '';
+
+  // External pain points
+  const extBlock = (dim) => {
+    const items = D.pain.external[dim.id] || [];
+    return `
+      <div class="out-block">
+        <div class="out-label">${dim.name}</div>
+        ${items.length
+          ? items.map(t => `<div style="font-size:13px;color:var(--ink-mid);line-height:1.6;padding:3px 0;">• ${esc(t)}</div>`).join('')
+          : '<span class="pill-empty">None provided</span>'}
+      </div>`;
+  };
+
+  // Intent & scope
+  const buildBuyLabels = { buy:'Buy — off-the-shelf solutions', build:'Build — develop internally', both:'Combination — buy and build' };
+  const scopeLabels    = { broad:'Broadly, across the organization', divisions:'Among specific divisions', narrow:'For narrow or targeted purposes' };
+  const facingLabels   = { external:'External-facing AI', internal:'Internal-facing AI', both:'Both internal and external-facing' };
+  const budgetLabels   = { company:'Company overhead / technology budget', shared:'Shared across divisions or teams', other:'Other', undetermined:'Undetermined' };
+  const investLabels   = {
+    strategic:'Strategic priority — AI is a significant focus and hitting projected returns is critical to current strategic and innovation goals',
+    growth:'Growth investment — intended to help achieve accelerated growth without threatening core business stability if returns are not fully realized',
+    cautious:'Cautious start — ease into AI investment, starting small and progressively building out after ROI is assessed',
+  };
+  const humanLabels = { limited:'Limited — 1 to 3 FTEs', moderate:'Moderate — 4 to 10 FTEs', considerable:'Considerable — more than 10 FTEs' };
+
+  const cultureAll = [...D.identity.culture, ...D.identity.cultureOther];
+
+  document.getElementById('output-summary').innerHTML = `
+    <!-- Header -->
+    <div style="background:var(--navy);border-radius:10px;padding:16px 20px;margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:3px;">AI Use Case Discovery — Pre-Meeting Screening Summary</div>
+      <div style="font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:#fff;">${esc(co)}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-top:2px;">${size ? size + ' employees' : ''}</div>
+    </div>
+
+    <!-- Company Identity -->
+    <div class="out-section-title">Company Identity</div>
+    <div class="out-block" style="border-left:4px solid var(--navy);">
+      <div class="out-label">Mission Statement</div>
+      <div class="out-value" style="font-family:'DM Serif Display',Georgia,serif;font-style:italic;font-size:15px;color:var(--navy);">${mission ? '&ldquo;' + esc(mission) + '&rdquo;' : '<span class="pill-empty">Not provided</span>'}</div>
+    </div>
+    <div class="out-block">
+      <div class="out-label">Core Values</div>
+      <div>${D.identity.values.length ? D.identity.values.map(v => pill(v,'pill-navy')).join('') : empty}</div>
+    </div>
+    <div class="out-block">
+      <div class="out-label">Strategic Goals</div>
+      <div>${D.identity.goals.length ? D.identity.goals.map(v => pill(v,'pill-teal')).join('') : empty}</div>
+    </div>
+    <div class="out-block">
+      <div class="out-label">Company Culture</div>
+      <div>${cultureAll.length ? cultureAll.map(v => pill(v,'pill-violet')).join('') : empty}</div>
+    </div>
+
+    <!-- Pain Points -->
+    <div class="out-section-title">Internal Pain Points (Ranked by Priority)</div>
+    ${internalHtml}
+    ${unrankedHtml}
+
+    <div class="out-section-title">External Pain Points (Users / Clients)</div>
+    ${extBlock(EXTERNAL_PAIN_DIMS[0])}
+    ${extBlock(EXTERNAL_PAIN_DIMS[1])}
+
+    <!-- Intent & Scope -->
+    <div class="out-section-title">AI Implementation Intent &amp; Scope</div>
+    <div class="out-block">
+      <div class="out-label">Expectations</div>
+      <div class="out-value">${D.intent.expectations || document.getElementById('s_expectations')?.value || '<span class="pill-empty">Not provided</span>'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="out-block">
+        <div class="out-label">Build or Buy</div>
+        <div>${D.intent.buildbuy ? pill(buildBuyLabels[D.intent.buildbuy], 'pill-violet') : empty}</div>
+      </div>
+      <div class="out-block">
+        <div class="out-label">Internal / External Facing</div>
+        <div>${D.intent.facing ? pill(facingLabels[D.intent.facing], 'pill-navy') : empty}</div>
+      </div>
+    </div>
+    <div class="out-block">
+      <div class="out-label">Scope</div>
+      <div>${D.intent.scope.length ? D.intent.scope.map(s => pill(scopeLabels[s],'pill-navy')).join('') : empty}</div>
+    </div>
+
+    <!-- Resource Considerations -->
+    <div class="out-section-title">Resource Considerations</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="out-block">
+        <div class="out-label">Budget Source</div>
+        <div class="out-value">${D.resources.budget ? esc(budgetLabels[D.resources.budget]) : '<span class="pill-empty">Not provided</span>'}</div>
+      </div>
+      <div class="out-block">
+        <div class="out-label">Human Resources Available</div>
+        <div class="out-value">${D.resources.humanRes ? esc(humanLabels[D.resources.humanRes]) : '<span class="pill-empty">Not provided</span>'}</div>
+      </div>
+    </div>
+    <div class="out-block">
+      <div class="out-label">Level of AI Investment</div>
+      <div class="out-value">${D.resources.investLevel ? esc(investLabels[D.resources.investLevel]) : '<span class="pill-empty">Not provided</span>'}</div>
+    </div>
+
+    <div class="no-print" style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px;">
+      <button class="btn btn-light btn-sm" onclick="printModal('modal-summary')">&#128438; Print / Save PDF</button>
+      <button class="btn btn-light btn-sm" onclick="closeModal('modal-summary')">Close</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════════
+// PRINT
+// ════════════════════════════════════════════
+function printModal(modalId) {
+  const modal  = document.getElementById(modalId);
+  const bodyEl = modal ? modal.querySelector('.modal-body') : null;
+  const hdrEl  = modal ? modal.querySelector('.modal-hdr-title') : null;
+  if (!bodyEl) { window.print(); return; }
+
+  const container = document.getElementById('print-container');
+  if (!container) { window.print(); return; }
+
+  const hdrHtml = hdrEl
+    ? `<div style="font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:var(--navy);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--rule);">${hdrEl.textContent}</div>`
+    : '';
+  container.innerHTML = hdrHtml + bodyEl.innerHTML;
+  container.querySelectorAll('.no-print').forEach(el => el.remove());
+
+  window.print();
+  setTimeout(() => { container.innerHTML = ''; }, 800);
+}
+
+// ════════════════════════════════════════════
+// SAVE / LOAD / AUTOSAVE
+// ════════════════════════════════════════════
+function collectData() {
+  return {
+    meta: {
+      company: document.getElementById('meta_company').value,
+      size:    document.getElementById('meta_size').value,
+    },
+    identity: {
+      mission: document.getElementById('id_mission').value,
+      values: D.identity.values, goals: D.identity.goals,
+      culture: D.identity.culture, cultureOther: D.identity.cultureOther,
+    },
+    pain: D.pain,
+    intent: {
+      expectations: document.getElementById('s_expectations')?.value || D.intent.expectations,
+      buildbuy: D.intent.buildbuy, scope: D.intent.scope, facing: D.intent.facing,
+    },
+    resources: D.resources,
+  };
+}
+
+function autosave() {
+  try {
+    localStorage.setItem('uc_screen', JSON.stringify(collectData()));
+    document.getElementById('status-dot').className = 'status-dot saved';
+    document.getElementById('status-text').textContent = 'Auto-saved · ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  } catch(e) {}
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('uc_screen');
+    if (raw) restoreData(JSON.parse(raw));
+  } catch(e) {}
+}
+
+function restoreData(d) {
+  if (!d) return;
+  const m = d.meta || {};
+  if (m.company) document.getElementById('meta_company').value = m.company;
+  if (m.size)    document.getElementById('meta_size').value    = m.size;
+
+  const id = d.identity || {};
+  if (id.mission) document.getElementById('id_mission').value = id.mission;
+  D.identity.mission = id.mission || '';
+  D.identity.values  = id.values  || [];
+  D.identity.goals   = id.goals   || [];
+  D.identity.culture = id.culture || [];
+  D.identity.cultureOther = id.cultureOther || [];
+  renderTags('values'); renderTags('goals'); renderTags('cultureOther');
+  D.identity.culture.forEach(v => {
+    const chip = document.querySelector(`.culture-chip[data-value="${CSS.escape(v)}"]`);
+    if (chip) chip.classList.add('selected');
+  });
+
+  D.pain = d.pain || D.pain;
+  INTERNAL_PAIN_CATS.forEach(cat => {
+    const data = D.pain.internal[cat.id] || { rank:'', notes:'' };
+    const sel  = document.getElementById('rank-' + cat.id);
+    if (sel) sel.value = data.rank || '';
+    const ta = document.querySelector('#rnw-' + cat.id + ' textarea');
+    if (ta) ta.value = data.notes || '';
+    const btn = document.getElementById('rnt-' + cat.id);
+    if (btn) btn.innerHTML = data.notes ? '&#128221; Notes' : '+ Add notes';
+    const wrap = document.getElementById('rnw-' + cat.id);
+    if (wrap) wrap.style.display = data.notes ? 'block' : 'none';
+  });
+  EXTERNAL_PAIN_DIMS.forEach(dim => renderPainItems(dim.id));
+
+  const intent = d.intent || {};
+  D.intent.expectations = intent.expectations || '';
+  D.intent.buildbuy = intent.buildbuy || '';
+  D.intent.scope    = intent.scope    || [];
+  D.intent.facing   = intent.facing   || '';
+  const expEl = document.getElementById('s_expectations');
+  if (expEl && D.intent.expectations) expEl.value = D.intent.expectations;
+  if (D.intent.buildbuy) {
+    const el = document.querySelector(`#s_buildbuy .choice[onclick*="'${D.intent.buildbuy}'"]`);
+    if (el) el.classList.add('selected');
+  }
+  if (D.intent.facing) {
+    const el = document.querySelector(`#s_facing .choice[onclick*="'${D.intent.facing}'"]`);
+    if (el) el.classList.add('selected');
+  }
+  D.intent.scope.forEach(val => {
+    const el = document.querySelector(`#s_scope .multi[onclick*="'${val}'"]`);
+    if (el) el.classList.add('selected');
+  });
+
+  D.resources = d.resources || D.resources;
+  if (D.resources.budget) {
+    const el = document.querySelector(`#s_budget .choice[onclick*="'${D.resources.budget}'"]`);
+    if (el) el.classList.add('selected');
+  }
+  if (D.resources.humanRes) {
+    const el = document.querySelector(`#s_human_res .choice[onclick*="'${D.resources.humanRes}'"]`);
+    if (el) el.classList.add('selected');
+  }
+  if (D.resources.investLevel) {
+    const el = document.querySelector(`#s_invest_level .choice[onclick*="'${D.resources.investLevel}'"]`);
+    if (el) el.classList.add('selected');
+  }
+}
+
+function saveSession() {
+  const d = collectData();
+  const name = (d.meta.company || 'screening').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,40);
+  const blob = new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = name + '_ai_screening.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadSession(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      localStorage.setItem('uc_screen', JSON.stringify(d));
+      restoreData(d);
+    } catch(err) { alert('Could not read session file.'); }
+  };
+  r.readAsText(f); e.target.value = '';
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
